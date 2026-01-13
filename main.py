@@ -2,6 +2,7 @@ import aiohttp
 import asyncio
 import aiofiles
 import random
+import time
 
 checked_ips = set()
 live_sks    = set()
@@ -62,12 +63,15 @@ async def IPGenAndEnvCheck(session):
         print(f"{ip} - INVALID")
 
 async def main():
+    start_time = time.time()
     connector = aiohttp.TCPConnector(limit=1000, ttl_dns_cache=300, force_close=False)
     async with aiohttp.ClientSession(connector=connector) as session:
         while True:
             tasks = [IPGenAndEnvCheck(session) for _ in range(10000)]
             await asyncio.gather(*tasks)
-            stats = f'Total Checked: {len(checked_ips)} | Live SKs: {len(live_sks)} | Live IPs: {len(live_ips)}'
+            taken = time.time() - start_time
+            hour, minute, second = int(taken // 3600), int((taken % 3600) // 60), int(taken % 60)
+            stats = f'Total Checked: {len(checked_ips)} | Live SKs: {len(live_sks)} | Live IPs: {len(live_ips)} | Time Elapsed: {hour:02}h:{minute:02}m:{second:02}s'
             print(stats)
             with open("stats.txt", "w") as stats_file:
                 stats_file.write(stats + "\n")
